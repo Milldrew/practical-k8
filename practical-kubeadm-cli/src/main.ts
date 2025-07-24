@@ -13,58 +13,60 @@ async function bootstrap() {
   const controlPlaneController = app.get(ControlPlaneController);
   const workerNodeController = app.get(WorkerNodeController);
 
-  const program = new Command();
+  await installController.main();
 
-  program
-    .name('practical-kubeadm')
-    .description('CLI for managing Kubernetes clusters with kubeadm')
-    .version('1.0.0');
+  // const program = new Command();
 
-  program
-    .command('install')
-    .description('Install Kubernetes components')
-    .action(async () => {
-      await installController.main();
-    });
+  // program
+  //   .name('practical-kubeadm')
+  //   .description('CLI for managing Kubernetes clusters with kubeadm')
+  //   .version('1.0.0');
 
-  program
-    .command('uninstall')
-    .description('Uninstall Kubernetes components')
-    .action(async () => {
-      await uninstallController.main();
-    });
+  // program
+  //   .command('install')
+  //   .description('Install Kubernetes components')
+  //   .action(async () => {
+  //     await installController.main();
+  //   });
 
-  program
-    .command('create-control-plane-node')
-    .description('Create and configure control plane node')
-    .action(async () => {
-      await controlPlaneController.createMain();
-    });
+  // program
+  //   .command('uninstall')
+  //   .description('Uninstall Kubernetes components')
+  //   .action(async () => {
+  //     await uninstallController.main();
+  //   });
 
-  program
-    .command('revert-control-plane-node')
-    .description('Revert control plane node configuration')
-    .action(async () => {
-      await controlPlaneController.revertMain();
-    });
+  // program
+  //   .command('create-control-plane-node')
+  //   .description('Create and configure control plane node')
+  //   .action(async () => {
+  //     await controlPlaneController.createMain();
+  //   });
 
-  program
-    .command('create-worker-node')
-    .description('Create and configure worker node')
-    .argument('<worker-node-ip>', 'IP address of the worker node')
-    .action(async (workerNodeIp: string) => {
-      await workerNodeController.createMain(workerNodeIp);
-    });
+  // program
+  //   .command('revert-control-plane-node')
+  //   .description('Revert control plane node configuration')
+  //   .action(async () => {
+  //     await controlPlaneController.revertMain();
+  //   });
 
-  program
-    .command('revert-worker-node')
-    .description('Revert worker node configuration')
-    .argument('<worker-node-ip>', 'IP address of the worker node')
-    .action(async (workerNodeIp: string) => {
-      await workerNodeController.revertMain(workerNodeIp);
-    });
+  // program
+  //   .command('create-worker-node')
+  //   .description('Create and configure worker node')
+  //   .argument('<worker-node-ip>', 'IP address of the worker node')
+  //   .action(async (workerNodeIp: string) => {
+  //     await workerNodeController.createMain(workerNodeIp);
+  //   });
 
-  await program.parseAsync();
+  // program
+  //   .command('revert-worker-node')
+  //   .description('Revert worker node configuration')
+  //   .argument('<worker-node-ip>', 'IP address of the worker node')
+  //   .action(async (workerNodeIp: string) => {
+  //     await workerNodeController.revertMain(workerNodeIp);
+  //   });
+
+  // await program.parseAsync();
   await app.close();
 }
 

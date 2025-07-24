@@ -3,6 +3,7 @@ import { InstallController } from './install.controller';
 import { UninstallController } from './uninstall.controller';
 import { ControlPlaneController } from './control-plane.controller';
 import { WorkerNodeController } from './worker-node.controller';
+import { CheckComputerService } from './install/check-computer.service';
 
 @Module({
   imports: [],
@@ -12,6 +13,7 @@ import { WorkerNodeController } from './worker-node.controller';
     UninstallController,
     ControlPlaneController,
     WorkerNodeController,
+    CheckComputerService,
   ],
 })
 export class AppModule {}
