@@ -1,11 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AppController } from './app.controller';
+import { InstallController } from './install.controller';
+import { UninstallController } from './uninstall.controller';
+import { ControlPlaneController } from './control-plane.controller';
+import { WorkerNodeController } from './worker-node.controller';
 import { Command } from 'commander';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const appController = app.get(AppController);
+  const installController = app.get(InstallController);
+  const uninstallController = app.get(UninstallController);
+  const controlPlaneController = app.get(ControlPlaneController);
+  const workerNodeController = app.get(WorkerNodeController);
 
   const program = new Command();
   
@@ -18,32 +26,28 @@ async function bootstrap() {
     .command('install')
     .description('Install Kubernetes components')
     .action(async () => {
-      console.log('Installing Kubernetes components...');
-      // TODO: Implement install logic
+      await installController.main();
     });
 
   program
     .command('uninstall')
     .description('Uninstall Kubernetes components')
     .action(async () => {
-      console.log('Uninstalling Kubernetes components...');
-      // TODO: Implement uninstall logic
+      await uninstallController.main();
     });
 
   program
     .command('create-control-plane-node')
     .description('Create and configure control plane node')
     .action(async () => {
-      console.log('Creating control plane node...');
-      // TODO: Implement control plane creation logic
+      await controlPlaneController.createMain();
     });
 
   program
     .command('revert-control-plane-node')
     .description('Revert control plane node configuration')
     .action(async () => {
-      console.log('Reverting control plane node...');
-      // TODO: Implement control plane revert logic
+      await controlPlaneController.revertMain();
     });
 
   program
@@ -51,8 +55,7 @@ async function bootstrap() {
     .description('Create and configure worker node')
     .argument('<worker-node-ip>', 'IP address of the worker node')
     .action(async (workerNodeIp: string) => {
-      console.log(`Creating worker node at ${workerNodeIp}...`);
-      // TODO: Implement worker node creation logic via SSH
+      await workerNodeController.createMain(workerNodeIp);
     });
 
   program
@@ -60,8 +63,7 @@ async function bootstrap() {
     .description('Revert worker node configuration')
     .argument('<worker-node-ip>', 'IP address of the worker node')
     .action(async (workerNodeIp: string) => {
-      console.log(`Reverting worker node at ${workerNodeIp}...`);
-      // TODO: Implement worker node revert logic via SSH
+      await workerNodeController.revertMain(workerNodeIp);
     });
 
   await program.parseAsync();
