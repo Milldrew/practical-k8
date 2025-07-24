@@ -14,7 +14,7 @@ async function bootstrap() {
   const workerNodeController = app.get(WorkerNodeController);
 
   const program = new Command();
-  
+
   program
     .name('practical-kubeadm')
     .description('CLI for managing Kubernetes clusters with kubeadm')
