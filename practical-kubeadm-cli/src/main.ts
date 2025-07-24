@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { AppController } from './app.controller';
 import { InstallController } from './install.controller';
 import { UninstallController } from './uninstall.controller';
 import { ControlPlaneController } from './control-plane.controller';
@@ -9,7 +8,6 @@ import { Command } from 'commander';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
-  const appController = app.get(AppController);
   const installController = app.get(InstallController);
   const uninstallController = app.get(UninstallController);
   const controlPlaneController = app.get(ControlPlaneController);
