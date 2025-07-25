@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as os from 'os';
+import { logHeadline } from 'src/log.functions';
 
 @Injectable()
 export class CheckComputerService {
   main() {
-    console.log('Checking computer operating system and resources...');
+    logHeadline('Checking computer operating system and resources...');
     this.checkOperatingSystem();
     this.checkMemory();
     this.checkCPU();
