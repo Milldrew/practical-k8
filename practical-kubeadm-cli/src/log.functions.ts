@@ -1,4 +1,5 @@
-const BAR = '──────────────────────────────────────────────────────────────';
+const BAR =
+  '───────────────────────────────────────────────────────────────────────────────────────';
 export function logHeadline(text: string) {
   let originalText = text;
   text = text.trim();
@@ -11,23 +12,24 @@ function centerHeadlineText(text: string) {
   const width = BAR.length;
   const textLength = text.length;
   if (textLength >= width) {
-    console.log(width);
-    console.log(textLength);
-    console.log('too long');
     return text;
   }
   const leftPadding = Math.floor((width - textLength) / 2);
   const rightPadding = width - textLength - leftPadding;
-  console.log('left');
-  console.log(leftPadding);
-  console.log(rightPadding);
   return ' '.repeat(leftPadding) + text + ' '.repeat(rightPadding);
 }
 
 export function logParagraph(text: string) {
-  text = `${text}\n${BAR}`;
-  text = text.trim();
+  text = `${text}`;
+  text = text;
   text = breakLine(text);
+  console.log(BAR);
+  console.log(text);
+  console.log(BAR);
+}
+
+export function unorderedList(texts: string[]) {
+  const text = texts.map((text) => `- ${text}`).join('\n');
   console.log(text);
 }
 
@@ -35,19 +37,21 @@ function breakLine(text: string) {
   const lineLength = BAR.length - 2; // Subtract 2 for the surrounding spaces
   const words = text.split(' ');
   const lines: string[] = [];
-  let currentLine = '';
+  let currentLine = ' ';
 
   for (const word of words) {
-    if (currentLine.length + word.length + 1 > lineLength) {
-      lines.push(currentLine.trim());
-      currentLine = '';
+    const potentialLineLength = currentLine.length + word.length + 1; // +1 for space
+    if (potentialLineLength > lineLength) {
+      lines.push(currentLine);
+      currentLine = ' ';
     }
     currentLine += `${word} `;
   }
 
   if (currentLine.length > 0) {
-    lines.push(currentLine.trim());
+    lines.push(currentLine);
   }
+  lines.map((text) => ` ${text} `); // Add spaces around each line for consistency
 
   return lines.join('\n');
 }
