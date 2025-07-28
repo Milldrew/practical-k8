@@ -11,7 +11,6 @@ export class InstallController {
   ) {}
   async main(): Promise<void> {
     logHeadline('Installing kubeadm');
-    logHeadline('Installing kubeadm');
     logParagraph(
       'Installing kubeadm following URL: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/ ',
     );
