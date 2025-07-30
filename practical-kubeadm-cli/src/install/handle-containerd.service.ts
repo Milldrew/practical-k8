@@ -19,8 +19,8 @@ net.ipv4.ip_forward = 1
 export class HandleContainerdService {
   public async mainSetupContainerd(): Promise<void> {
     logHeadline('Setting up Containerd');
-    this.setupSysctlConfig();
-    this.installRequiredPackages();
+    // this.setupSysctlConfig();
+    // this.installRequiredPackages();
     this.installContainerd();
     // this.setupModules();
     logHeadline('Finished setting up Containerd');
@@ -28,24 +28,24 @@ export class HandleContainerdService {
     // this.aptUpdate();
     // this.addContainerdRequiredModules();
   }
-  private installContainerd(): void {
+  private async installContainerd() {
     logHeadline('Curling the GPG key for Containerd');
 
-    Spawn.spawn(
-      'curl',
-      '-sSL',
-      'https://packages.cloud.google.com/apt/doc/apt-key.gpg',
-      '|',
-      'sudo',
-      'gpg',
-      '--dearmor',
-      '-o',
-      '/usr/share/keyrings/cloud.google.gpg',
-    );
+    // Spawn.spawn(
+    //   'curl',
+    //   '-sSL',
+    //   'https://packages.cloud.google.com/apt/doc/apt-key.gpg',
+    //   '|',
+    //   'sudo',
+    //   'gpg',
+    //   '--dearmor',
+    //   '-o',
+    //   '/usr/share/keyrings/cloud.google.gpg',
+    // );
 
     logHeadline('Adding the Containerd repository');
 
-    Spawn.spawn(
+    await Spawn.spawnPromise(
       'echo',
       '"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null',
       '|',
@@ -53,6 +53,7 @@ export class HandleContainerdService {
       'tee',
       '/etc/apt/sources.list.d/containerd-stable.list',
     );
+    logHeadline('finished adding the Containerd repository');
     stopExecution(); // Debugger stop executio
     Spawn.aptUpdate();
     Spawn.aptInstall('docker-ce', 'docker-ce-cli', 'containerd.io');
@@ -86,12 +87,12 @@ export class HandleContainerdService {
       logHeadline('Appending sysctl configuration for Containerd');
       fse.appendFileSync(sysctlFilePath, sysctlConfig);
     }
-    Spawn.spawn('sudo', 'sysctl', '--system');
+    Spawn.spawnSync('sudo', 'sysctl', '--system');
   }
   private setupModules(): void {
     const modulesFilePath = '/etc/modules-load.d/containerd.conf';
     fse.ensureFileSync(modulesFilePath);
     fse.writeFileSync(modulesFilePath, MODULES);
-    Spawn.spawn('sudo', 'systemctl', 'restart', 'containerd');
+    Spawn.spawnSync('sudo', 'systemctl', 'restart', 'containerd');
   }
 }

@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 
 export class Spawn {
   static aptUpdate(): void {
@@ -13,17 +13,16 @@ export class Spawn {
       );
     }
   }
-  static aptInstall(...packages: string[]): void {
-    const result = spawnWrapper(
+  static async aptInstall(...packages: string[]) {
+    const result = await spawnPromiseWrapper(
       'sudo',
       'apt-get',
       'install',
       '-y',
       ...packages,
-    );
-    if (result.error) {
-      throw new Error(`Failed to install packages: ${result.error.message}`);
-    }
+    ).catch((error) => {
+      throw new Error(`Failed to install packages: ${error.message}`);
+    });
   }
   static addContainerdRequiredModules(): void {
     const result = spawnWrapper('sudo', 'modprobe', 'overlay', 'br_netfilter');
@@ -33,11 +32,21 @@ export class Spawn {
       );
     }
   }
-  static spawn(...args: string[]): void {
+  static async spawnPromise(...args: string[]): Promise<{ code: number }> {
+    console.log(1);
+    return await spawnPromiseWrapper(...args).catch((error) => {
+      throw new Error(`Failed to execute command: ${error.message}`);
+    });
+  }
+  static spawnSync(...args: string[]) {
     const result = spawnWrapper(...args);
     if (result.error) {
       throw new Error(`Failed to execute command: ${result.error.message}`);
     }
+    console.table(result);
+    console.log(result.output);
+    console.log(result.status);
+    return result;
   }
 }
 
@@ -46,5 +55,41 @@ function spawnWrapper(...args: string[]) {
   return spawnSync(firstArg, restArgs, {
     stdio: 'inherit',
     shell: true,
+  });
+}
+async function spawnPromiseWrapper(
+  ...args: string[]
+): Promise<{ code: number }> {
+  console.log(1);
+  return new Promise((resolve, reject) => {
+    const child = spawn(args[0], args.slice(1), {
+      stdio: 'pipe',
+    });
+    console.log(2);
+    let output = '';
+    let errorOutput = '';
+    child.stdout.on('data', (data) => {
+      console.log(3);
+      console.log(`stdout: ${data}`);
+      output += data.toString();
+    });
+    child.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+    child.on('close', (code) => {
+      console.log(`code: ${code}`);
+      if (code !== 0) {
+        reject(
+          new Error(`Command failed with exit code ${code}: ${errorOutput}`),
+        );
+      } else {
+        resolve({ code });
+      }
+    });
+    child.on('error', (error) => {
+      reject(new Error(`Failed to start command: ${error.message}`));
+    });
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
   });
 }
