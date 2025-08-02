@@ -1,6 +1,27 @@
+import * as fse from 'fs-extra';
 import { spawn, spawnSync } from 'child_process';
+import { logParagraph } from 'src/log.functions';
 
 export class Spawn {
+  static async createScriptExecuteScriptDeleteScript(
+    scriptName: string,
+    scriptContent: string,
+  ): Promise<void> {
+    const scriptPath = `/tmp/${scriptName}`;
+    logParagraph(
+      `Creating script at ${scriptPath} with content:\n${scriptContent}`,
+    );
+    await fse.writeFile(scriptPath, scriptContent);
+    await fse.chmod(scriptPath, 0o755); // Make the script executable
+    try {
+      const result = await Spawn.spawnPromise(scriptPath);
+      console.log(`Script executed successfully: ${result.code}`);
+    } catch (error) {
+      console.error(`Error executing script: ${error.message}`);
+    } finally {
+      // await fse.remove(scriptPath); // Delete the script after execution
+    }
+  }
   static aptUpdate(): void {
     const result = spawnWrapper('sudo', 'apt-get', 'update');
     if (result.error) {

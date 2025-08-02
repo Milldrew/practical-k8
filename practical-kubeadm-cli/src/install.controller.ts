@@ -17,6 +17,6 @@ export class InstallController {
       'Installing kubeadm following URL: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/ ',
     );
     this.checkComputerService.main();
-    this.handleContainerdService.mainSetupContainerd();
+    // this.handleContainerdService.mainSetupContainerd();
   }
 }
